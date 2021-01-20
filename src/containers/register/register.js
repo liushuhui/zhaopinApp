@@ -39,9 +39,9 @@ class Register extends Component {
     render() {
         const {userType} = this.state;
         const {msg, redirectTo} = this.props.user;
-        // if (redirectTo) {
-        //     return <Redirect to={redirectTo}/>
-        // }
+        if (redirectTo) {
+            return <Redirect to={redirectTo}/>
+        }
         return (
             <div>
                 <NavBar>招聘App</NavBar>

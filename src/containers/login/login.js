@@ -45,6 +45,10 @@ import { loginAction } from '../../redux/action'
 
   render() {
     const {msg, redirectTo} = this.props.user;
+    console.log('redirectTo',redirectTo);
+    if (redirectTo) {
+      return <Redirect to={redirectTo}/>
+    }
     return (
       <div>
         <NavBar>招聘App</NavBar>

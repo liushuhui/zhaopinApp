@@ -24,6 +24,10 @@ function users(state1 = initUser, action1) {
             return {...action1.data, redirectTo: getRedirectTo(userType, header)};
         case ERROR_MSG:
             return {...state1, msg: action1.data}
+        case RECEIVE_USER:
+            return action1.data
+        case RESET_USER:
+            return {...initUser, msg: action1.data}
         default:
             return state1;
     }
