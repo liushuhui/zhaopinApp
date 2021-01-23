@@ -12,13 +12,17 @@ import {
 import {
     reqRegister,
     reqLogin,
-    reqUpdate
+    reqUpdate,
+    reqUser,
+    reqUserlist
 
 } from '../api'
 const authSuccess = (user) => ({type: AUTH_SUCCESS, data: user});
 const errorMsg = (msg) => ({type: ERROR_MSG, data: msg});
 const receiveUser = user => ({type: RECEIVE_USER, data: user})
-const resetUser = msg => ({type: RESET_USER, data: msg})
+export const resetUser = msg => ({type: RESET_USER, data: msg})
+const receiveUserList = (userList) => ({type: RECEIVE_USER_LIST, data: userList})
+
 
 export const registerAction = (user) => {
     if (!user.username) {
@@ -51,6 +55,7 @@ export const loginAction = (user) => {
     return async dispatch => {
         const res = await reqLogin(user);
         const result = res.data;
+        console.log('result login', result);
         if (result.code === 205) {
             dispatch(authSuccess(result.data))
         } else {
@@ -67,6 +72,29 @@ export const updateUserAction = user => {
             dispatch(receiveUser(result.data))
         } else {
             dispatch(resetUser(result.msg))
+        }
+    }
+}
+export const getUser = () => {
+    return async dispatch => {
+        const res = await reqUser();
+        const result = res.data;
+        if (result.code === 205) {
+            dispatch(receiveUser(result.data))
+        } else {
+            dispatch(resetUser(result.msg))
+        }
+    }
+}
+
+export const getUserList = (type) => {
+    return async dispatch => {
+        let res = await reqUserlist(type);
+        let result = res.data;
+        if (result.code === 205) {
+            console.log('result.data action 11',result, type);
+            dispatch(receiveUserList(result.data))
+            // dispatch(() => ({type: RECEIVE_USER_LIST, data: result.data}))
         }
     }
 }

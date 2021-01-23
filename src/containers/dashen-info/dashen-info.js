@@ -28,9 +28,9 @@ import {updateUserAction} from '../../redux/action'
     }
     render() {
          // 如果信息已经完善, 自动重定向到对应主界面
-         const {header, type} = this.props.user;
+         const {header, userType} = this.props.user;
          if (header) {
-             const path = type === 'jobSeeker' ? '/jobSeeker' : '/boss';
+             const path = userType === 'jobSeeker' ? '/jobSeeker' : '/boss';
              return <Redirect to={path}/>
          }
         return (
