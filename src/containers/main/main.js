@@ -14,6 +14,7 @@ import Boss from '../boss/boss'
 import Message from '../message/message'
 import Personal from '../personal/personal'
 import NavFooter from '../../components/nav-footer/nav-footer'
+import Chat from '../chat/chat'
 
  class Main extends Component {
     componentDidMount() {
@@ -90,6 +91,7 @@ import NavFooter from '../../components/nav-footer/nav-footer'
                     }
                     <Route path='/jobSeekerinfo' component={DashenInfo}/>
                     <Route path='/bossinfo' component={BossInfo}/>
+                    <Route path='/chat/:userId' component={Chat}/>
                     <Route component={NotFound}/>
                 </Switch>
                 {currentNav ? <NavFooter navList={navList}/>: null}

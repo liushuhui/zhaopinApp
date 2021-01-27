@@ -18,34 +18,30 @@ import Logo from '../../components/logo/logo'
 import { loginAction } from '../../redux/action'
 
  class Login extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
+        state = {
             username: '', // 用户名
             password: '', // 密码
         }
-        this.login = this.login.bind(this);
-        this.toRegister = this.toRegister.bind(this);
-    }
-    login() {
-        this.props.loginAction(this.state);
-    }
+  login = () => {
+      this.props.loginAction(this.state);
+      console.log('this.state login', this.state);
+  }
 
   // 处理输入数据的改变: 更新对应的状态
-  handleChange(name, val) {
+  handleChange = (name, val) => {
     // 更新状态
     this.setState({
       [name]: val  // 属性名不是name, 而是name变量的值
     })
   }
 
-  toRegister() {
+  toRegister = () => {
     this.props.history.replace('/register')
   }
 
   render() {
     const {msg, redirectTo} = this.props.user;
-    console.log('redirectTo',redirectTo);
+    console.log('redirectTo login',redirectTo);
     if (redirectTo) {
       return <Redirect to={redirectTo}/>
     }

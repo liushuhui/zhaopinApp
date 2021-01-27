@@ -35,6 +35,7 @@ class BossInfo extends Component {
     render() {
          // 如果信息已经完善, 自动重定向到对应主界面
          const {header, userType} = this.props.user;
+         console.log('header boss-info',header);
          if (header) {
              const path = userType === 'jobSeeker' ? '/jobSeeker' : '/boss';
              return <Redirect to={path}/>
