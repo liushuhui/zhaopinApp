@@ -16,7 +16,8 @@ import {
     reqUpdate,
     reqUser,
     reqUserlist,
-    reqChatList
+    reqChatList,
+    reqReadMsg
 } from '../api'
 const authSuccess = (user) => ({type: AUTH_SUCCESS, data: user});
 const errorMsg = (msg) => ({type: ERROR_MSG, data: msg});
@@ -25,8 +26,24 @@ export const resetUser = msg => ({type: RESET_USER, data: msg})
 const receiveUserList = (userList) => ({type: RECEIVE_USER_LIST, data: userList})
 const receiveMsgList = ({users, chatList, userid}) => ({type: RECEIVE_MSG_LIST, data:{users, chatList,userid}})
 const receiveMsg = (chatList, userid) => ({type: RECEIVE_MSG, data: {chatList, userid}})
+const msgRead = ({count, from, to}) => ({type: MSG_READ, data: {count, from, to}})
 
-
+// 链接socket.io
+function connectIO(dispatch, userid) {
+    if (!io.socket) {
+        io.socket = io('ws://localhost:7001');
+        io.socket.on('connection', (msg) => {
+            console.log('客户端已经连接上',msg)
+        })
+        io.socket.on('getMsg', (msg) => {
+            // debugger;
+            console.log('客户端接收服务器发送的消息',msg, msg.to)
+            if(userid===msg.from || userid===msg.to) {
+                dispatch(receiveMsg(msg, userid))
+              }
+        })
+    }
+}
 
 async function getMsgList(dispatch, userid) {
     connectIO(dispatch, userid);
@@ -35,7 +52,7 @@ async function getMsgList(dispatch, userid) {
     // debugger;
     if (result.code === 205) {
         const {users, chatList} = result.data;
-        dispatch(receiveMsgList({users, chatList}))
+        dispatch(receiveMsgList({users, chatList, userid}))
     }
 }
 
@@ -71,7 +88,6 @@ export const loginAction = (user) => {
     return async dispatch => {
         const res = await reqLogin(user);
         const result = res.data;
-        console.log('result login', result);
         if (result.code === 205) {
             getMsgList(dispatch,result.data._id)
             dispatch(authSuccess(result.data))
@@ -94,6 +110,7 @@ export const updateUserAction = user => {
 }
 export const getUser = () => {
     return async dispatch => {
+        // debugger
         const res = await reqUser();
         const result = res.data;
         if (result.code === 205) {
@@ -111,31 +128,28 @@ export const getUserList = (type) => {
         let res = await reqUserlist(type);
         let result = res.data;
         if (result.code === 205) {
-            console.log('result.data action 11',result, type);
             dispatch(receiveUserList(result.data))
             // dispatch(() => ({type: RECEIVE_USER_LIST, data: result.data}))
         }
     }
 }
-// 链接socket.io
-function connectIO(dispatch, userid) {
-    if (!io.socket) {
-        io.socket = io('ws://localhost:7001');
-        io.socket.on('connection', (msg) => {
-            console.log('客户端已经连接上',msg)
-        })
-        io.socket.on('getMsg', (msg) => {
-            console.log('客户端接收服务器发送的消息',msg)
-            if(userid===msg.from || userid===msg.to) {
-                dispatch(receiveMsg(msg, userid))
-              }
-        })
+
+
+export const sendMsg = ({from, to, content}) => {
+    return async dispatch => {
+        console.log('客户端向服务端发送的消息', from, to, content);
+        io.socket.emit('postMsg',{from, to, content})
     }
 }
 
-export const sendMsg = (from, to, content) => {
+export const readMsg = (from, to) => {
     return async dispatch => {
-        console.log('客户端向服务端发送的消息', from, to, content);
-        io.socket.emit('postMsg',from, to, content)
+        const res = await reqReadMsg(from);
+        console.log('reqReadMsg',res);
+        const result = res.data;
+        if (result.code === 205) {
+            const count = result.data;
+            dispatch(msgRead({count, from, to}))
+        }
     }
 }

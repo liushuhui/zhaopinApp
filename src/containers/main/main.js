@@ -19,6 +19,7 @@ import Chat from '../chat/chat'
  class Main extends Component {
     componentDidMount() {
         const userId = Cookies.get('userid');
+        console.log('userid 是谁的', userId)
         const {_id} = this.props.user;
         if (userId && !_id) {
             this.props.getUser()
@@ -28,16 +29,16 @@ import Chat from '../chat/chat'
         {
           path: '/boss', // 路由路径
           component: Boss,
-          title: '老板列表',
-          icon: 'laoban',
-          text: '老板',
+          title: '大神列表',
+          icon: 'dashen',
+          text: '大神',
         },
         {
           path: '/jobSeeker', // 路由路径
           component: Dashen,
-          title: '大神列表',
-          icon: 'dashen',
-          text: '大神',
+          title: '老板列表',
+          icon: 'laoban',
+          text: '老板',
         },
         {
           path: '/message', // 路由路径
@@ -54,9 +55,12 @@ import Chat from '../chat/chat'
           text: '个人',
         }
       ]
+       
     render() {
+        // debugger;
         const userId = Cookies.get('userid');
-        const {user} = this.props;
+        const {user, unReadCount} = this.props;
+        console.log('main.js', this.props);
         if (!userId) {
            return <Redirect to="/login"/>
         }
@@ -91,15 +95,15 @@ import Chat from '../chat/chat'
                     }
                     <Route path='/jobSeekerinfo' component={DashenInfo}/>
                     <Route path='/bossinfo' component={BossInfo}/>
-                    <Route path='/chat/:userId' component={Chat}/>
+                    <Route path='/chat/:id' component={Chat}/>
                     <Route component={NotFound}/>
                 </Switch>
-                {currentNav ? <NavFooter navList={navList}/>: null}
+                {currentNav ? <NavFooter navList={navList} unReadCount={unReadCount}/>: null}
             </div>
         )
     }
 }
 export default connect(
-    state => ({user: state.users}),
+    state => ({user: state.users, unReadCount: state.chat.unReadCount}),
     {getUser}
 )(Main)
